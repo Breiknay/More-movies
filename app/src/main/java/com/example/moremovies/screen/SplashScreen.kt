@@ -17,17 +17,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.moremovies.BuildConfig
 import com.example.moremovies.R
+import com.example.moremovies.navigation.MainRoute
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(navigationController: NavHostController) {
     val alpha = remember { Animatable(0f) }
 
     LaunchedEffect(key1 = true) {
@@ -35,6 +38,11 @@ fun SplashScreen() {
             targetValue = 1f,
             animationSpec = tween(durationMillis = 2000, easing = FastOutLinearInEasing)
         )
+    }
+    LaunchedEffect(alpha.value) {
+        if (alpha.value == 1f) {
+            navigationController.navigate(MainRoute.Articles.name)
+        }
     }
     Box(
         Modifier
@@ -51,7 +59,7 @@ fun SplashScreen() {
         )
 
         Text(
-            text = "Привет",
+            text = LocalContext.current.getString(R.string.app_name),
             style = TextStyle(
                 color = MaterialTheme.colorScheme.onSecondary,
                 fontSize = 40.sp,
@@ -68,7 +76,7 @@ fun SplashScreen() {
             text = "Version - ${BuildConfig.VERSION_NAME}",
             color = MaterialTheme.colorScheme.onSecondary,
             textAlign = TextAlign.Center,
-            fontSize = 24.sp,
+            fontSize = 15.sp,
             modifier = Modifier
                 .alpha(alpha.value)
                 .align(Alignment.BottomCenter)

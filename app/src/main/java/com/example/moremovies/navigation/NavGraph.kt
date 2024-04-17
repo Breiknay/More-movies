@@ -1,32 +1,131 @@
 package com.example.moremovies.navigation
 
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation.compose.rememberNavController
+import com.example.moremovies.screen.AboutScreen
+import com.example.moremovies.screen.ArticlesScreen
+import com.example.moremovies.screen.SettingsScreen
 import com.example.moremovies.screen.SplashScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
-const val SPLASH_SCREEN = "splashScreen"
+enum class MainRoute(value: String) {
+    Articles("articles"),
+    About("about"),
+    Settings("settings"),
+    Splash("splash"),
+    ListFilm("listFilm")
+}
 
+private data class DrawerMenu(val icon: ImageVector, val title: String, val route: String)
+
+private val menus = arrayOf(
+    DrawerMenu(Icons.Filled.Face, "Articles", MainRoute.Articles.name),
+    DrawerMenu(Icons.Filled.Settings, "Settings", MainRoute.Settings.name),
+    DrawerMenu(Icons.Filled.Info, "About Us", MainRoute.About.name)
+)
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(
+    navController: NavHostController = rememberNavController(),
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+) {
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                DrawerContent(menus) { route ->
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
 
-//
-    NavHost(navController = navController, startDestination = SPLASH_SCREEN) {
-        composable(SPLASH_SCREEN) {
-            SplashScreen()
+                    navController.navigate(route)
+                }
+            }
         }
+    ) {
+        NavHost(navController = navController, startDestination = MainRoute.Splash.name) {
+            composable(MainRoute.Splash.name) {
+                SplashScreen(navController)
+            }
 
-        composable(SPLASH_SCREEN) {
-            SplashScreen()
+            composable(MainRoute.Articles.name) {
+                ArticlesScreen(drawerState)
+            }
+            composable(MainRoute.About.name) {
+                AboutScreen(drawerState)
+            }
+            composable(MainRoute.Settings.name) {
+                SettingsScreen(drawerState)
+            }
         }
+    }
+}
 
-
+@Composable
+private fun DrawerContent(
+    menus: Array<DrawerMenu>,
+    onMenuClick: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                modifier = Modifier.size(150.dp),
+                imageVector = Icons.Filled.AccountCircle,
+                contentScale = ContentScale.Crop,
+                contentDescription = null
+            )
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        menus.forEach {
+            NavigationDrawerItem(
+                label = { Text(text = it.title) },
+                icon = { Icon(imageVector = it.icon, contentDescription = null) },
+                selected = false,
+                onClick = {
+                    onMenuClick(it.route)
+                }
+            )
+        }
     }
 }
