@@ -1,5 +1,6 @@
 package com.example.moremovies.screen
 
+import android.net.Uri
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,20 +28,44 @@ import androidx.navigation.NavHostController
 import com.example.moremovies.BuildConfig
 import com.example.moremovies.R
 import com.example.moremovies.navigation.MainRoute
+import com.example.moremovies.network.model_request.film.FilmsRequest
+import com.example.moremovies.repository.SharedPreferencesRepository
+import com.example.moremovies.ui.theme.WhiteColor
+import com.google.gson.Gson
+
 
 @Composable
 fun SplashScreen(navigationController: NavHostController) {
+    var values = LocalContext.current
     val alpha = remember { Animatable(0f) }
+    val authPrefs = SharedPreferencesRepository(values)
 
     LaunchedEffect(key1 = true) {
+
         alpha.animateTo(
             targetValue = 1f,
             animationSpec = tween(durationMillis = 2000, easing = FastOutLinearInEasing)
         )
     }
+
     LaunchedEffect(alpha.value) {
+
         if (alpha.value == 1f) {
-            navigationController.navigate(MainRoute.Articles.name)
+            val startDestination = if (authPrefs.getAuthState()) {
+                MainRoute.PremieresFilm.value
+            } else {
+                MainRoute.LoginScreen.value
+            }
+
+            navigationController.navigate(startDestination) {
+
+                popUpTo(navigationController.graph.id) {
+                    saveState = true
+                }
+
+                launchSingleTop = true
+                restoreState = true
+            }
         }
     }
     Box(
@@ -50,7 +74,7 @@ fun SplashScreen(navigationController: NavHostController) {
             .fillMaxHeight()
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.kinopoisk_icon_main),
             contentDescription = "",
             alignment = Alignment.Center, modifier = Modifier
                 .alpha(alpha.value)
@@ -61,7 +85,7 @@ fun SplashScreen(navigationController: NavHostController) {
         Text(
             text = LocalContext.current.getString(R.string.app_name),
             style = TextStyle(
-                color = MaterialTheme.colorScheme.onSecondary,
+                color = WhiteColor,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -73,8 +97,8 @@ fun SplashScreen(navigationController: NavHostController) {
         )
 
         Text(
-            text = "Version - ${BuildConfig.VERSION_NAME}",
-            color = MaterialTheme.colorScheme.onSecondary,
+            text = "${values.getString(R.string.version)} - ${BuildConfig.VERSION_NAME}",
+            color = WhiteColor,
             textAlign = TextAlign.Center,
             fontSize = 15.sp,
             modifier = Modifier

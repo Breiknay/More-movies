@@ -2,32 +2,33 @@ package com.example.moremovies.network.model_response.film
 
 import com.google.gson.annotations.SerializedName
 
-data class MovieResponse(
-    @SerializedName("total") val total: Int,
-    @SerializedName("totalPages") val totalPages: Int,
-    @SerializedName("items") val items: List<Movie>
+data class FilmResponse(
+    val total: Int,
+    val totalPages: Int,
+    @SerializedName("items")
+    val listFilm: List<Movie>
 )
 
 data class Movie(
-    @SerializedName("kinopoiskId") val kinopoiskId: Int,
-    @SerializedName("imdbId") val imdbId: String?,
-    @SerializedName("nameRu") val nameRu: String?,
-    @SerializedName("nameEn") val nameEn: String?,
-    @SerializedName("nameOriginal") val nameOriginal: String?,
-    @SerializedName("countries") val countries: List<Country>?,
-    @SerializedName("genres") val genres: List<Genre>?,
-    @SerializedName("ratingKinopoisk") val ratingKinopoisk: Double?,
-    @SerializedName("ratingImdb") val ratingImdb: Double?,
-    @SerializedName("year") val year: Int?,
-    @SerializedName("type") val type: String?,
-    @SerializedName("posterUrl") val posterUrl: String?,
-    @SerializedName("posterUrlPreview") val posterUrlPreview: String?
+    val kinopoiskId: Int,
+    val imdbId: String?,
+    val nameRu: String?,
+    val nameEn: String?,
+    val nameOriginal: String?,
+    val countries: List<Country>?,
+    val genres: List<Genre>?,
+    val ratingKinopoisk: Double?,
+    val ratingImdb: Double?,
+    val year: Int?,
+    val type: String?,
+    val posterUrl: String?,
+    val posterUrlPreview: String?
 )
 
 data class Country(
-    @SerializedName("country") val country: String?
+    val country: String?
 )
 
 data class Genre(
-    @SerializedName("genre") val genre: String?
+    val genre: String?
 )

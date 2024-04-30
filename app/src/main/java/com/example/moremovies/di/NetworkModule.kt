@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
-    private val BASE_URL = "https://kinopoiskapiunofficial.tech/api/v2.2/"
+    private val BASE_URL = "https://kinopoiskapiunofficial.tech/"
     private val API_KEY = "7dc45602-67f2-4d52-a60c-0f672502f91a"
 
     @Provides
