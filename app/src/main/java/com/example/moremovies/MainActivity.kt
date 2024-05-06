@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.moremovies.navigation.NavGraph
+import com.example.moremovies.ui.theme.MainColor
 import com.example.moremovies.ui.theme.MoreMoviesTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
             MoreMoviesTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    color = MainColor
                 ) {
                     NavGraph(rememberNavController())
                 }
@@ -31,3 +32,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

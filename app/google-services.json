@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1018682880058",
+    "project_id": "moremovies-7f052",
+    "storage_bucket": "moremovies-7f052.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018682880058:android:0a5607744dd0adef2f4503",
+        "android_client_info": {
+          "package_name": "com.example.moremovies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxt6qK1TFq5fG3tgYBKSvyd056LojtM7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

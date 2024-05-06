@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">More movies</string>
+    <string name="filter">Filters</string>
+    <string name="listFilm">List of films</string>
+    <string name="refresh">Refresh</string>
+    <string name="actors">Actors</string>
+    <string name="aboutFilm">About the film</string>
+    <string name="closeApp">Logout</string>
+    <string name="version">Application version</string>
+    <string name="filterApply">Apply filters</string>
+    <string name="filterChooseFilm">Choose\nfilm sort</string>
+    <string name="filterChooseTypeFilm">Choose movie type</string>
+    <string name="filterChooseYearFilmTo">Movies with</string>
+    <string name="filterChooseYearFilmAfto">Movies by</string>
+    <string name="filterChooseRating">Movie rating</string>
+    <string name="order_rating">Rating</string>
+    <string name="order_num_vote">Number of votes</string>
+    <string name="order_year">Year</string>
+    <string name="order_all">All</string>
+    <string name="movie_film">Movie</string>
+    <string name="movie_tv_show">TV show</string>
+    <string name="movie_tv_series">Television series</string>
+    <string name="movie_mini_series">Mini series</string>
+    <string name="movie_all">All</string>
+    <string name="refreshAboutFilm">Repeat</string>
+    <string name="duration">Duration</string>
+    <string name="year">Year</string>
+    <string name="description">Description</string>
+    <string name="search">Search</string>
+    <string name="premieres">Film premieres</string>
+    <string name="register">Register</string>
+    <string name="login">Authorization</string>
+    <string name="password">Password*</string>
+    <string name="confirmPassword">Confirm password*</string>
+    <string name="notMatchingPassword">Password does not match</string>
+    <string name="enterEmail">Enter E-MAIL*</string>
+    <string name="email">E-MAIL*</string>
+    <string name="enterName">Name*</string>
+    <string name="required">Required field</string>
+    <string name="enterPassword">Enter password*</string>
+    <string name="registerButton">Register?</string>
+</resources>
