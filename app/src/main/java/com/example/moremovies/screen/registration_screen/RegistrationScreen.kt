@@ -44,10 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moremovies.R
 import com.example.moremovies.navigation.MainRoute
-import com.example.moremovies.screen.fitures.ErrorView
 import com.example.moremovies.screen.fitures.GradientButton
-import com.example.moremovies.screen.login_screen.LoginAction
-import com.example.moremovies.screen.login_screen.LoginState
+import com.example.moremovies.screen.fitures.MinimalDialog
+import com.example.moremovies.screen.registration_screen.RegistrationAction.*
 import com.example.moremovies.ui.theme.Orange
 import com.example.moremovies.ui.theme.Red
 import com.example.moremovies.ui.theme.WhiteColor
@@ -63,30 +62,21 @@ fun RegistrationScreen(
 ) {
     val context = LocalContext.current
     val name = remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue(text = "123"))
     }
-    val email = remember { mutableStateOf(TextFieldValue()) }
-    val password = remember { mutableStateOf(TextFieldValue()) }
-
-    val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
-
+    val email = remember { mutableStateOf(TextFieldValue(text = "123")) }
+    val password = remember { mutableStateOf(TextFieldValue(text = "123")) }
+    val confirmPassword = remember { mutableStateOf(TextFieldValue(text = "123")) }
     val nameErrorState = remember { mutableStateOf(false) }
     val emailErrorState = remember { mutableStateOf(false) }
     val passwordErrorState = remember { mutableStateOf(false) }
     val confirmPasswordErrorState = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val currentState = state.value
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
+    when (currentState) {
 
-
-        if (state.value.loading) {
+        is RegistrationState.Loading -> {
             val strokeWidth = 5.dp
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -99,263 +89,288 @@ fun RegistrationScreen(
                     strokeWidth = strokeWidth
                 )
             }
-        } else {
+            return;
+        }
 
+        is RegistrationState.RegistrationStateError -> MinimalDialog(
+            error = currentState.error, {
+                processAction(
+                    ClickOnDismiss(
 
-            if (state.value.error != null) {
-                ErrorView(
-                    state.value.error.toString()
+                    )
                 )
             }
+        )
 
-            if (state.value.successRegistration) {
-                onNavigate(MainRoute.LoginScreen.value)
-            }
+        is RegistrationState.SuccessRegistration -> {
+            onNavigate(MainRoute.LoginScreen.value);
+            return
+        }
 
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.kinopoisk_icon_main),
-                    contentDescription = "",
-                    alignment = Alignment.Center, modifier = Modifier
-                        .fillMaxSize()
-                )
-            }
+        is RegistrationState.InitialState -> {
+            Unit
+        }
+    }
 
-            Text(
-                text = context.getString(R.string.register),
-                style = TextStyle(
-                    fontSize = 40.sp,
-                    fontFamily = FontFamily.Serif,
-                    color = WhiteColor
-                )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.kinopoisk_icon_main),
+                contentDescription = "",
+                alignment = Alignment.Center, modifier = Modifier
+                    .fillMaxSize()
             )
+        }
 
-            Spacer(Modifier.size(16.dp))
-            OutlinedTextField(
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedTextColor = WhiteColor,
-                    unfocusedTextColor = WhiteColor,
-                    focusedBorderColor = MaterialTheme.colors.secondary,
-                    unfocusedBorderColor = MaterialTheme.colors.secondary,
-                    focusedLabelColor = MaterialTheme.colors.secondary,
-                    cursorColor = WhiteColor
-                ),
-                value = name.value,
-                onValueChange = {
-                    if (nameErrorState.value) {
-                        nameErrorState.value = false
-                    }
-                    name.value = it
-                },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = styleTextBodyBig,
-
-                isError = nameErrorState.value,
-                label = {
-                    Text(
-                        text = context.getString(R.string.enterName), color = WhiteColor,
-                        style = styleTextBodyBig
-                    )
-                },
+        Text(
+            text = context.getString(R.string.register),
+            style = TextStyle(
+                fontSize = 40.sp,
+                fontFamily = FontFamily.Serif,
+                color = WhiteColor
             )
-            if (nameErrorState.value) {
-                Text(text = context.getString(R.string.required), color = Color.Red)
-            }
-            Spacer(Modifier.size(16.dp))
+        )
 
-            OutlinedTextField(
-                value = email.value,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedTextColor = WhiteColor,
-                    unfocusedTextColor = WhiteColor,
-                    focusedBorderColor = MaterialTheme.colors.secondary,
-                    unfocusedBorderColor = MaterialTheme.colors.secondary,
-                    focusedLabelColor = MaterialTheme.colors.secondary,
-                    cursorColor = WhiteColor
-                ),
-                onValueChange = {
-                    if (emailErrorState.value) {
-                        emailErrorState.value = false
-                    }
-                    email.value = it
-                },
-                textStyle = styleTextBodyBig,
-
-                modifier = Modifier.fillMaxWidth(),
-                isError = emailErrorState.value,
-                label = {
-                    Text(
-                        text = context.getString(R.string.email), color = WhiteColor,
-                        style = styleTextBodyBig
-                    )
-                },
-            )
-            if (emailErrorState.value) {
-                Text(text = context.getString(R.string.required), color = Color.Red)
-            }
-
-            Spacer(Modifier.size(16.dp))
-            val passwordVisibility = remember { mutableStateOf(true) }
-            OutlinedTextField(
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedTextColor = WhiteColor,
-                    unfocusedTextColor = WhiteColor,
-                    focusedBorderColor = MaterialTheme.colors.secondary,
-                    unfocusedBorderColor = MaterialTheme.colors.secondary,
-                    focusedLabelColor = MaterialTheme.colors.secondary,
-                    cursorColor = WhiteColor
-                ),
-                textStyle = styleTextBodyBig,
-                value = password.value,
-                onValueChange = {
-                    if (passwordErrorState.value) {
-                        passwordErrorState.value = false
-                    }
-                    password.value = it
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(
-                        text = context.getString(R.string.password), color = WhiteColor,
-                        style = styleTextBodyBig
-                    )
-                },
-                isError = passwordErrorState.value,
-                trailingIcon = {
-                    IconButton(onClick = {
-                        passwordVisibility.value = !passwordVisibility.value
-                    }) {
-                        Icon(
-                            imageVector = if (passwordVisibility.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                            contentDescription = "visibility",
-                            tint = WhiteColor
-                        )
-                    }
-                },
-                visualTransformation = if (passwordVisibility.value) PasswordVisualTransformation() else VisualTransformation.None
-            )
-            if (passwordErrorState.value) {
-                Text(text = context.getString(R.string.required), color = Color.Red)
-            }
-
-            Spacer(Modifier.size(16.dp))
-            val cPasswordVisibility = remember { mutableStateOf(true) }
-            OutlinedTextField(
-                textStyle = styleTextBodyBig,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedTextColor = WhiteColor,
-                    unfocusedTextColor = WhiteColor,
-                    focusedBorderColor = MaterialTheme.colors.secondary,
-                    unfocusedBorderColor = MaterialTheme.colors.secondary,
-                    focusedLabelColor = MaterialTheme.colors.secondary,
-                    cursorColor = WhiteColor
-                ),
-                value = confirmPassword.value,
-                onValueChange = {
-                    if (confirmPasswordErrorState.value) {
-                        confirmPasswordErrorState.value = false
-                    }
-                    confirmPassword.value = it
-                },
-                modifier = Modifier.fillMaxWidth(),
-                isError = confirmPasswordErrorState.value,
-                label = {
-                    Text(
-                        text = context.getString(R.string.confirmPassword), color = WhiteColor,
-                        style = styleTextBodyBig
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = {
-                        cPasswordVisibility.value = !cPasswordVisibility.value
-                    }) {
-                        Icon(
-                            imageVector = if (cPasswordVisibility.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                            contentDescription = "visibility",
-                            tint = WhiteColor
-                        )
-                    }
-                },
-                visualTransformation = if (cPasswordVisibility.value) PasswordVisualTransformation() else VisualTransformation.None
-            )
-            if (confirmPasswordErrorState.value) {
-                val msg = if (confirmPassword.value.text.isEmpty()) {
-                    context.getString(R.string.required)
-                } else if (confirmPassword.value.text != password.value.text) {
-                    context.getString(R.string.notMatchingPassword)
-                } else {
-                    ""
+        Spacer(Modifier.size(16.dp))
+        OutlinedTextField(
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedTextColor = WhiteColor,
+                unfocusedTextColor = WhiteColor,
+                focusedBorderColor = MaterialTheme.colors.secondary,
+                unfocusedBorderColor = MaterialTheme.colors.secondary,
+                focusedLabelColor = MaterialTheme.colors.secondary,
+                cursorColor = WhiteColor
+            ),
+            value = name.value,
+            onValueChange = {
+                if (nameErrorState.value) {
+                    nameErrorState.value = false
                 }
-                Text(text = msg, color = Color.Red)
-            }
-            Spacer(Modifier.size(16.dp))
+                name.value = it
+            },
+            modifier = Modifier.fillMaxWidth(),
+            textStyle = styleTextBodyBig,
 
-            GradientButton(
-                text = context.getString(R.string.register),
-                textColor = Color.Black,
-                gradient = Brush.horizontalGradient(
-                    colors = listOf(
-                        Orange,
-                        Red,
-                        Orange
-                    )
+            isError = nameErrorState.value,
+            label = {
+                Text(
+                    text = context.getString(R.string.enterName), color = WhiteColor,
+                    style = styleTextBodyBig
                 )
-            ) {
-                when {
-                    name.value.text.isEmpty() -> {
-                        nameErrorState.value = true
-                    }
+            },
+        )
+        if (nameErrorState.value) {
+            Text(text = context.getString(R.string.required), color = Color.Red)
+        }
+        Spacer(Modifier.size(16.dp))
 
-                    email.value.text.isEmpty() -> {
-                        emailErrorState.value = true
-                    }
+        OutlinedTextField(
+            value = email.value,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedTextColor = WhiteColor,
+                unfocusedTextColor = WhiteColor,
+                focusedBorderColor = MaterialTheme.colors.secondary,
+                unfocusedBorderColor = MaterialTheme.colors.secondary,
+                focusedLabelColor = MaterialTheme.colors.secondary,
+                cursorColor = WhiteColor
+            ),
+            onValueChange = {
+                if (emailErrorState.value) {
+                    emailErrorState.value = false
+                }
+                email.value = it
+            },
+            textStyle = styleTextBodyBig,
 
-                    password.value.text.isEmpty() -> {
-                        passwordErrorState.value = true
-                    }
+            modifier = Modifier.fillMaxWidth(),
+            isError = emailErrorState.value,
+            label = {
+                Text(
+                    text = context.getString(R.string.email), color = WhiteColor,
+                    style = styleTextBodyBig
+                )
+            },
+        )
+        if (emailErrorState.value) {
+            Text(text = context.getString(R.string.required), color = Color.Red)
+        }
 
-                    confirmPassword.value.text.isEmpty() -> {
-                        confirmPasswordErrorState.value = true
-                    }
+        Spacer(Modifier.size(16.dp))
+        val passwordVisibility = remember { mutableStateOf(true) }
+        OutlinedTextField(
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedTextColor = WhiteColor,
+                unfocusedTextColor = WhiteColor,
+                focusedBorderColor = MaterialTheme.colors.secondary,
+                unfocusedBorderColor = MaterialTheme.colors.secondary,
+                focusedLabelColor = MaterialTheme.colors.secondary,
+                cursorColor = WhiteColor
+            ),
+            textStyle = styleTextBodyBig,
+            value = password.value,
+            onValueChange = {
+                if (passwordErrorState.value) {
+                    passwordErrorState.value = false
+                }
+                password.value = it
+            },
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(
+                    text = context.getString(R.string.password), color = WhiteColor,
+                    style = styleTextBodyBig
+                )
+            },
+            isError = passwordErrorState.value,
+            trailingIcon = {
+                IconButton(onClick = {
+                    passwordVisibility.value = !passwordVisibility.value
+                }) {
+                    Icon(
+                        imageVector = if (passwordVisibility.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                        contentDescription = "visibility",
+                        tint = WhiteColor
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisibility.value) PasswordVisualTransformation() else VisualTransformation.None
+        )
+        if (passwordErrorState.value) {
+            Text(text = context.getString(R.string.required), color = Color.Red)
+        }
 
-                    confirmPassword.value.text != password.value.text -> {
-                        confirmPasswordErrorState.value = true
-                    }
+        Spacer(Modifier.size(16.dp))
+        val cPasswordVisibility = remember { mutableStateOf(true) }
+        OutlinedTextField(
+            textStyle = styleTextBodyBig,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedTextColor = WhiteColor,
+                unfocusedTextColor = WhiteColor,
+                focusedBorderColor = MaterialTheme.colors.secondary,
+                unfocusedBorderColor = MaterialTheme.colors.secondary,
+                focusedLabelColor = MaterialTheme.colors.secondary,
+                cursorColor = WhiteColor
+            ),
+            value = confirmPassword.value,
+            onValueChange = {
+                if (confirmPasswordErrorState.value) {
+                    confirmPasswordErrorState.value = false
+                }
+                confirmPassword.value = it
+            },
+            modifier = Modifier.fillMaxWidth(),
+            isError = confirmPasswordErrorState.value,
+            label = {
+                Text(
+                    text = context.getString(R.string.confirmPassword), color = WhiteColor,
+                    style = styleTextBodyBig
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = {
+                    cPasswordVisibility.value = !cPasswordVisibility.value
+                }) {
+                    Icon(
+                        imageVector = if (cPasswordVisibility.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                        contentDescription = "visibility",
+                        tint = WhiteColor
+                    )
+                }
+            },
+            visualTransformation = if (cPasswordVisibility.value) PasswordVisualTransformation() else VisualTransformation.None
+        )
+        if (confirmPasswordErrorState.value) {
+            val msg = if (confirmPassword.value.text.isEmpty()) {
+                context.getString(R.string.required)
+            } else if (confirmPassword.value.text != password.value.text) {
+                context.getString(R.string.notMatchingPassword)
+            } else {
+                ""
+            }
+            Text(text = msg, color = Color.Red)
+        }
+        Spacer(Modifier.size(16.dp))
 
-                    else -> {
-                        nameErrorState.value = false
-                        emailErrorState.value = false
-                        passwordErrorState.value = false
-                        confirmPasswordErrorState.value = false
-                        processAction(
-                            RegistrationAction.ClickRegistrationButton(
-                                RegistrationModel(
-                                    name = name.value.text.trim(),
-                                    email = email.value.text.trim(),
-                                    password = password.value.text.trim()
-                                )
+        GradientButton(
+            text = context.getString(R.string.register),
+            textColor = Color.Black,
+            gradient = Brush.horizontalGradient(
+                colors = listOf(
+                    Orange,
+                    Red,
+                    Orange
+                )
+            )
+        ) {
+            when {
+                name.value.text.isEmpty() -> {
+                    nameErrorState.value = true
+                }
+
+                email.value.text.isEmpty() -> {
+                    emailErrorState.value = true
+                }
+
+                password.value.text.isEmpty() -> {
+                    passwordErrorState.value = true
+                }
+
+                confirmPassword.value.text.isEmpty() -> {
+                    confirmPasswordErrorState.value = true
+                }
+
+                confirmPassword.value.text != password.value.text -> {
+                    confirmPasswordErrorState.value = true
+                }
+
+                else -> {
+                    nameErrorState.value = false
+                    emailErrorState.value = false
+                    passwordErrorState.value = false
+                    confirmPasswordErrorState.value = false
+                    processAction(
+                        RegistrationAction.ClickRegistrationButton(
+                            RegistrationModel(
+                                name = name.value.text.trim(),
+                                email = email.value.text.trim(),
+                                password = password.value.text.trim()
                             )
                         )
-                    }
-                }
-            }
-
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                TextButton(onClick = {
-                    onNavigate(MainRoute.LoginScreen.value)
-
-                }) {
-                    Text(
-                        text = context.getString(R.string.login), color = WhiteColor,
-                        style = styleTextBodyNormal
                     )
                 }
             }
         }
+
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            TextButton(onClick = {
+                onNavigate(MainRoute.LoginScreen.value)
+
+            }) {
+                Text(
+                    text = context.getString(R.string.login), color = WhiteColor,
+                    style = styleTextBodyNormal
+                )
+            }
+        }
     }
+
+
+
 }

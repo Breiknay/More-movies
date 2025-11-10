@@ -2,28 +2,27 @@ package com.example.moremovies.screen.registration_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.moremovies.screen.login_screen.LoginAction
-import com.example.moremovies.screen.login_screen.LoginResult
-import com.example.moremovies.screen.login_screen.LoginState
 import com.example.moremovies.usecase.AuthFireBaseUseCase
-
 import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
-
 class RegistrationViewModel @Inject constructor(
     private val authFireBaseUseCase: AuthFireBaseUseCase,
 ) : ViewModel() {
 
-    val state = MutableStateFlow(
-        RegistrationState()
+    private val _state = MutableStateFlow<RegistrationState>(
+        RegistrationState.InitialState()
     )
+
+
+    val state: StateFlow<RegistrationState> = _state.asStateFlow()
 
 
     fun processAction(action: RegistrationAction) {
@@ -31,6 +30,12 @@ class RegistrationViewModel @Inject constructor(
             val result: Flow<RegistrationResult> = when (action) {
                 is RegistrationAction.ClickRegistrationButton ->
                     authFireBaseUseCase.registration(action.registrationModel)
+                is RegistrationAction.ClickOnDismiss -> {
+                    _state.emit(
+                        RegistrationState.InitialState()
+                    );
+                    return@launch
+                }
             }
             result.collect {
                 processResult(it)
@@ -39,26 +44,19 @@ class RegistrationViewModel @Inject constructor(
     }
 
     private suspend fun processResult(result: RegistrationResult) {
-        val prevState = state.value
         when (result) {
-            is RegistrationResult.SuccessRegistration -> {
-                state.emit(
-                    prevState.copy(
-                        successRegistration = result.successRegistration,
-                        error = null,
-                    )
-                )
-            }
-
-            is RegistrationResult.Error -> {
-                state.emit(prevState.copy(error = result.error))
-            }
-
-            is RegistrationResult.Loading -> {
-                state.emit(prevState.copy(loading = result.isLoading))
-            }
-
+            is RegistrationResult.Error -> _state.emit(
+                RegistrationState.RegistrationStateError(error = result.error)
+            );
+            is RegistrationResult.Loading -> _state.emit(
+                RegistrationState.Loading()
+            );
+            is RegistrationResult.SuccessRegistration -> _state.emit(
+                RegistrationState.SuccessRegistration()
+            );
         }
+
+
     }
 }
 

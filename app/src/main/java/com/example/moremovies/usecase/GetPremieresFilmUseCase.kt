@@ -1,11 +1,8 @@
 package com.example.moremovies.usecase
 
-import com.example.moremovies.models.AboutFilm
 import com.example.moremovies.models.Film
 import com.example.moremovies.network.model_request_premieres.RequestPremieres
-import com.example.moremovies.network.model_response.film.Movie
 import com.example.moremovies.repository.FilmRepository
-import com.example.moremovies.screen.about_film.AboutFilmResult
 import com.example.moremovies.screen.premieres_film.PremieresFilmResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,7 +12,7 @@ class GetPremieresFilmUseCase @Inject constructor(
     private val repository: FilmRepository,
 ) {
 
-    suspend fun getPremieresFilm(requestPremieres: RequestPremieres): Flow<PremieresFilmResult> =
+    fun getPremieresFilm(requestPremieres: RequestPremieres): Flow<PremieresFilmResult> =
         flow {
             emit(PremieresFilmResult.Loading(true))
             try {

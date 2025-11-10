@@ -6,6 +6,7 @@ import com.example.moremovies.screen.login_screen.LoginResult
 import com.example.moremovies.screen.registration_screen.RegistrationModel
 import com.example.moremovies.screen.registration_screen.RegistrationResult
 import com.google.firebase.Firebase
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,29 +16,29 @@ import javax.inject.Inject
 class AuthFireBaseUseCase @Inject constructor(
     private val authPrefs: SharedPreferencesRepository
 ) {
-    suspend fun registration(registrationModel: RegistrationModel): Flow<RegistrationResult> =
+    fun registration(registrationModel: RegistrationModel): Flow<RegistrationResult> =
         flow {
-            emit(RegistrationResult.Loading(true))
+            emit(RegistrationResult.Loading())
             try {
-                val result = Firebase.auth.createUserWithEmailAndPassword(
+                val result: AuthResult = Firebase.auth.createUserWithEmailAndPassword(
                     registrationModel.email,
                     registrationModel.password
                 ).await()
                 println(result)
                 emit(
-                    RegistrationResult.SuccessRegistration(true)
+                    RegistrationResult.SuccessRegistration()
                 )
 
-                emit(RegistrationResult.Loading(false))
+
 
             } catch (error: Exception) {
                 emit(RegistrationResult.Error(error.message.toString()))
-                emit(RegistrationResult.Loading(false))
+
             }
 
         }
 
-    suspend fun login(loginModel: LoginModel): Flow<LoginResult> =
+    fun login(loginModel: LoginModel): Flow<LoginResult> =
         flow {
             emit(LoginResult.Loading(true))
             try {

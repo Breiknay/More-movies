@@ -1,21 +1,23 @@
 package com.example.moremovies.usecase
 
 import com.example.moremovies.models.AboutFilm
+import com.example.moremovies.network.model_response.film.InfoResponseFilm
 import com.example.moremovies.repository.FilmRepository
 import com.example.moremovies.screen.about_film.AboutFilmResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 import javax.inject.Inject
 
 class GetInfoFilmUseCase @Inject constructor(
     private val repository: FilmRepository,
 ) {
 
-    suspend fun getInfoFilm(idFilm: Int): Flow<AboutFilmResult> =
+    fun getInfoFilm(idFilm: Int): Flow<AboutFilmResult> =
         flow {
             emit(AboutFilmResult.Loading(true))
             try {
-                val response = repository.getInfoFilm(idFilm)
+                val response: Response<InfoResponseFilm> = repository.getInfoFilm(idFilm)
                 if (response.isSuccessful) {
                     response.body().let {
                         AboutFilm(

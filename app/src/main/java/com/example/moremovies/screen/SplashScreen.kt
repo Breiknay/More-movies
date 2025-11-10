@@ -1,6 +1,5 @@
 package com.example.moremovies.screen
 
-import android.net.Uri
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
@@ -28,15 +27,13 @@ import androidx.navigation.NavHostController
 import com.example.moremovies.BuildConfig
 import com.example.moremovies.R
 import com.example.moremovies.navigation.MainRoute
-import com.example.moremovies.network.model_request.film.FilmsRequest
 import com.example.moremovies.repository.SharedPreferencesRepository
 import com.example.moremovies.ui.theme.WhiteColor
-import com.google.gson.Gson
 
 
 @Composable
 fun SplashScreen(navigationController: NavHostController) {
-    var values = LocalContext.current
+    val values = LocalContext.current
     val alpha = remember { Animatable(0f) }
     val authPrefs = SharedPreferencesRepository(values)
 

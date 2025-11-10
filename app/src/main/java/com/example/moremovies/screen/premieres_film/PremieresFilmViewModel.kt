@@ -1,20 +1,14 @@
 package com.example.moremovies.screen.premieres_film
 
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.moremovies.network.model_request.film.FilmsRequest
 import com.example.moremovies.network.model_request_premieres.Month
 import com.example.moremovies.network.model_request_premieres.RequestPremieres
-import com.example.moremovies.screen.film_list_screen.FilmListAction
-import com.example.moremovies.usecase.GetInfoFilmUseCase
 import com.example.moremovies.usecase.GetPremieresFilmUseCase
 import com.example.moremovies.usecase.GetVideosFilmUseCase
-
 import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

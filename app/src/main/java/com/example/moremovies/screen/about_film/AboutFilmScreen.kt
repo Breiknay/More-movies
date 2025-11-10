@@ -41,6 +41,7 @@ import com.example.moremovies.ui.theme.WhiteColor
 import com.example.moremovies.ui.theme.styleTextBodyBig
 import com.example.moremovies.ui.theme.styleTextBodyNormal
 import com.example.moremovies.utils.parseResponse.hourMinutes
+import androidx.core.net.toUri
 
 @Composable
 fun AboutFilmScreen(
@@ -82,7 +83,7 @@ fun AboutFilmScreen(
                         )
 
                         data =
-                            Uri.parse(filmListState.aboutFilm?.url)
+                            filmListState.aboutFilm?.url?.toUri()
                         flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                     }, null)
                     launcher.launch(share)

@@ -1,10 +1,15 @@
 package com.example.moremovies.di
 
 
+import android.content.Context
 import com.example.moremovies.network.Api
+import com.example.moremovies.repository.FilmRepository
+import com.example.moremovies.repository.SharedPreferencesRepository
+import com.example.moremovies.usecase.AuthFireBaseUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -40,5 +45,27 @@ class NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(Api::class.java)
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object RepositoryModule {
+
+        @Provides
+        fun provideGetUsersUseCase(api: Api): FilmRepository {
+            return FilmRepository(api)
+        }
+
+        @Provides
+        fun provideSharedPreferencesRepository(@ApplicationContext context: Context): SharedPreferencesRepository {
+            return SharedPreferencesRepository(context)
+        }
+
+        @Provides
+        fun provideAuthFireBaseUseCase(sharedPreferencesRepository: SharedPreferencesRepository): AuthFireBaseUseCase {
+            return AuthFireBaseUseCase(sharedPreferencesRepository)
+        }
+
+
     }
 }
